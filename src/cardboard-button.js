@@ -12,8 +12,8 @@ class CardboardButton extends Button {
     // this.handleVrDisplayPresentChange_ = videojs.bind(this, this.handleVrDisplayPresentChange_);
     // this.handleOrientationChange_ = videojs.bind(this, this.handleOrientationChange_);
     // window.addEventListener('orientationchange', this.handleOrientationChange_);
-    // window.addEventListener('vrdisplayactivate', this.handleVrDisplayActivate_);
-    // window.addEventListener('vrdisplaydeactivate', this.handleVrDisplayDeactivate_);
+    window.addEventListener('vrdisplayactivate', this.handleVrDisplayActivate_);
+    window.addEventListener('vrdisplaydeactivate', this.handleVrDisplayDeactivate_);
 
     // vrdisplaypresentchange does not fire activate or deactivate
     // and happens when hitting the back button during cardboard mode
@@ -60,32 +60,36 @@ class CardboardButton extends Button {
 //     window.dispatchEvent(new window.Event('resize'));
 //   }
 
-//   handleVrDisplayActivate_() {
-//     // we mimic fullscreen on IOS
-//     if (videojs.browser.IS_IOS) {
-//       this.oldWidth_ = this.player_.currentWidth();
-//       this.oldHeight_ = this.player_.currentHeight();
-//       this.player_.enterFullWindow();
-//       this.changeSize_();
-//     }
+  handleVrDisplayActivate_() {
+    /*
+    // we mimic fullscreen on IOS
+    if (videojs.browser.IS_IOS) {
+      this.oldWidth_ = this.player_.currentWidth();
+      this.oldHeight_ = this.player_.currentHeight();
+      this.player_.enterFullWindow();
+      this.changeSize_();
+    }
+    */
 
-//     this.active_ = true;
-//   }
+    this.active_ = true;
+  }
 
-//   handleVrDisplayDeactivate_() {
-//     // un-mimic fullscreen on iOS
-//     if (videojs.browser.IS_IOS) {
-//       if (this.oldWidth_) {
-//         this.player_.width(this.oldWidth_);
-//       }
-//       if (this.oldHeight_) {
-//         this.player_.height(this.oldHeight_);
-//       }
-//       this.player_.exitFullWindow();
-//     }
+  handleVrDisplayDeactivate_() {
+    /*
+    // un-mimic fullscreen on iOS
+    if (videojs.browser.IS_IOS) {
+      if (this.oldWidth_) {
+        this.player_.width(this.oldWidth_);
+      }
+      if (this.oldHeight_) {
+        this.player_.height(this.oldHeight_);
+      }
+      this.player_.exitFullWindow();
+    }
+    */
 
-//     this.active_ = false;
-//   }
+    this.active_ = false;
+  }
 
   handleClick(event) {
     // if cardboard mode display is not active, activate it
@@ -98,10 +102,8 @@ class CardboardButton extends Button {
     //     this.player_.play();
     //   }
       window.dispatchEvent(new window.Event('vrdisplayactivate'));
-      this.active_ = true;
     } else {
       window.dispatchEvent(new window.Event('vrdisplaydeactivate'));
-      this.active_ = false;
     }
   }
 

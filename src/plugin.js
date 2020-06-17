@@ -55,18 +55,28 @@ class Xr extends Plugin {
         if (!this.xrSupported)
             return;
 
+        if (this.animationFrameId_)
+            this.cancelAnimationFrame(this.animationFrameId_);
+
+        this.controls3d.disable();
         var self = this;
         var sessionInit = { optionalFeatures: ['local-floor'] };
         navigator.xr.requestSession('immersive-vr', sessionInit).then(function (session) {
+            // handle exit from VR
+            session.addEventListener('end', e => {
+              console.log('session ended');
+              window.dispatchEvent(new window.Event('vrdisplaydeactivate'));
+            });
+
             self.renderer.xr.setSession(session);
-            self.xrActive = true;
             self.currentSession = session;
             session.requestReferenceSpace('local')
             .then((referenceSpace) => {
                 self.xrReferenceSpace = referenceSpace;
+                self.xrActive = true;
+                self.trigger('xrSessionActivated');
+                self.animationFrameId_ = self.requestAnimationFrame(self.animate_);
             })
-            self.controls3d.disable();
-            self.trigger('xrSessionActivated');
         });
     }
 
@@ -74,15 +84,22 @@ class Xr extends Plugin {
         if (!this.xrSupported)
             return;
 
-        if (this.animationFrameId_) {
-            this.currentSession.cancelAnimationFrame(this.animationFrameId_);
-            this.animationFrameId_ = 0;
-        }
-        this.currentSession.end();
-        this.currentSession = null;
-        this.xrActive = false;
-        this.controls3d.enable();
-        this.trigger('xrSessionDeactivated');
+        if (this.animationFrameId_)
+            this.cancelAnimationFrame(this.animationFrameId_);
+
+        var self = this;
+        this.currentSession.end().catch( e => {
+          // Session already ended
+          if (e.name == 'InvalidStateError') return;
+          console.log(e);
+        }).then(function () {
+          self.xrActive = false;
+          self.currentSession = null;
+          self.renderer.xr.setSession(null);
+          self.controls3d.enable();
+          self.trigger('xrSessionDeactivated');
+          self.animationFrameId_ = self.requestAnimationFrame(self.animate_);
+        });
     }
 
     requestAnimationFrame(fn) {
@@ -93,7 +110,10 @@ class Xr extends Plugin {
     }
 
     cancelAnimationFrame(id) {
-        return this.player.cancelAnimationFrame(id);
+        if (this.xrActive)
+            return this.currentSession.cancelAnimationFrame(id);
+        else
+            return this.player.cancelAnimationFrame(id);
     }
 
     togglePlay_() {
