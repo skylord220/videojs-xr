@@ -197,16 +197,14 @@ class Xr extends Plugin {
         this.player.bigPlayButton = this.player.getChild('BigVrPlayButton');
 
         this.camera.position.set(0, 0, 0);
-        // this.renderer = new THREE.WebGLRenderer();
-        // this.renderer.setPixelRatio( window.devicePixelRatio );
         this.renderer = new THREE.WebGLRenderer({
-            devicePixelRatio: window.devicePixelRatio,
             alpha: false,
             clearColor: 0xffffff,
             antialias: true
         });   
 
         this.renderer.setSize(this.player.currentWidth(), this.player.currentHeight());
+        this.renderer.setPixelRatio( window.devicePixelRatio );
 
         this.renderedCanvas = this.renderer.domElement;
         this.renderedCanvas.setAttribute('style', 'width: 100%; height: 100%; position: absolute; top:0;');
