@@ -152,6 +152,7 @@ class Xr extends Plugin {
         const width = this.player.currentWidth();
         const height = this.player.currentHeight();
 
+        this.renderer.setSize(width, height);
         this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix();
     }
